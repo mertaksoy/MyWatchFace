@@ -42,13 +42,11 @@ update_watch(appdata_s *ad, watch_time_h watch_time, int ambient)
 
 	watch_time_get_hour24(watch_time, &hour24);
 	watch_time_get_minute(watch_time, &minute);
-	watch_time_get_second(watch_time, &second);
 	if (!ambient) {
-		snprintf(watch_text, TEXT_BUF_SIZE, "<font=Sans:style=Regular font_size=50><align=center>Hello World<br/>%02d:%02d:%02d</align></font/>",
-			hour24, minute, second);
-	} else {
-		snprintf(watch_text, TEXT_BUF_SIZE, "<align=center>Hello Watch<br/>%02d:%02d</align>",
+		snprintf(watch_text, TEXT_BUF_SIZE, "<font_size=140><align=center>%02d:%02d</align></font_size>",
 			hour24, minute);
+	} else {
+		// TODO: handle ambient case
 	}
 
 	elm_object_text_set(ad->label, watch_text);
@@ -76,13 +74,18 @@ create_base_gui(appdata_s *ad, int width, int height)
 	elm_win_resize_object_add(ad->win, ad->conform);
 	evas_object_show(ad->conform);
 
-	/* Label*/
-	ad->label = elm_label_add(ad->conform);
-	//ad->label = evas_object_text_add(ad->conform);
-	evas_object_resize(ad->label, width, height / 3);
-	evas_object_move(ad->label, 0, height / 3);
+	/* Box for vertical centered label */
+	Evas_Object *box = elm_box_add(ad->conform);
+	evas_object_show(box);
+	elm_object_content_set(ad->conform, box);
 
-	char *edj_path = NULL;
+	/* Label*/
+	ad->label = elm_label_add(box);
+	evas_object_show(ad->label);
+	elm_box_pack_end(box, ad->label);
+
+
+	/*char *edj_path = NULL;
 	edj_path = _create_resource_path("Rajdhani-Regular.ttf");
 	printf("%s", edj_path);
 	dlog_print(DLOG_ERROR, LOG_TAG, "src= %s", edj_path);
@@ -90,6 +93,7 @@ create_base_gui(appdata_s *ad, int width, int height)
 	evas_object_text_font_set(ad->label, "Rajdhani", 50);
 
 	evas_object_show(ad->label);
+	*/
 
 	ret = watch_time_get_current_time(&watch_time);
 	if (ret != APP_ERROR_NONE)
